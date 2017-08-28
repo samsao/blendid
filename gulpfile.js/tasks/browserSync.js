@@ -1,13 +1,13 @@
-if(global.production) return
+if (global.production) return
 
-var browserSync       = require('browser-sync')
-var gulp              = require('gulp')
-var webpack           = require('webpack')
+var browserSync = require('browser-sync')
+var gulp = require('gulp')
+var webpack = require('webpack')
 var webpackMultiConfig = require('../lib/webpack-multi-config')
-var pathToUrl         = require('../lib/pathToUrl')
-var path              = require('path')
+var pathToUrl = require('../lib/pathToUrl')
+var path = require('path')
 
-var browserSyncTask = function() {
+var browserSyncTask = function () {
 
   var webpackConfig = webpackMultiConfig('development')
   var compiler = webpack(webpackConfig)
@@ -15,18 +15,18 @@ var browserSyncTask = function() {
 
   if (typeof proxyConfig === 'string') {
     TASK_CONFIG.browserSync.proxy = {
-      target : proxyConfig
+      target: proxyConfig
     }
   }
 
   // Resolve path from PWD
-  if(TASK_CONFIG.browserSync.server && TASK_CONFIG.browserSync.server.baseDir) {
+  if (TASK_CONFIG.browserSync.server && TASK_CONFIG.browserSync.server.baseDir) {
     TASK_CONFIG.browserSync.server.baseDir = path.resolve(process.env.PWD, TASK_CONFIG.browserSync.server.baseDir)
   }
 
   // Resolve files from PWD
-  if(TASK_CONFIG.browserSync.files) {
-    TASK_CONFIG.browserSync.files = TASK_CONFIG.browserSync.files.map(function(glob) {
+  if (TASK_CONFIG.browserSync.files) {
+    TASK_CONFIG.browserSync.files = TASK_CONFIG.browserSync.files.map(function (glob) {
       return path.resolve(process.env.PWD, glob)
     })
   }
@@ -40,7 +40,7 @@ var browserSyncTask = function() {
       publicPath: pathToUrl('/', webpackConfig.output.publicPath)
     }),
     require('webpack-hot-middleware')(compiler)
-  ]
+  ].concat(server.middleware) // Preserve the middleware that the user might have set
 
   browserSync.init(TASK_CONFIG.browserSync)
 }
